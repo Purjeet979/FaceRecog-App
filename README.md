@@ -1,78 +1,99 @@
 # NHAI Biometrics — Offline Face Recognition & Liveness Verification App
 
-A high-performance, 100% offline, edge-AI biometric prototype built using **React Native**, **Expo**, **Google MLKit**, and **TensorFlow Lite (MobileFaceNet)**. Designed to operate completely offline, making it highly secure and reliable for integrations like attendance logging and CCTV feeds.
+A high-performance, 100% offline, edge-AI biometric prototype built using **React Native**, **Expo**, **Google MLKit**, and **TensorFlow Lite (MobileFaceNet)**. Designed to operate completely offline on mobile devices for robust, privacy-preserving face recognition and liveness checks.
+
+---
+
+## 🧩 Face Recognition Pipeline Overview
+
+```mermaid
+flowchart TD
+    A[Camera Capture] --> B[MLKit Face Detection]
+    B --> C[Liveness: Blink/Smile/Head Movement]
+    C -->|Passed| D[Embedding (MobileFaceNet TFLite)]
+    D --> E[Vector Store Search]
+    E --> F[RAG Matching (Consensus)]
+    F --> G[Identity Log]
+    C -->|Failed| H[Spoof Detected]
+```
+
+---
+
+### 🔎 Pipeline Stage Breakdown
+
+| Stage                         | Description                                                                                  |
+|-------------------------------|----------------------------------------------------------------------------------------------|
+| **Camera Capture**            | Captures live video stream for real-time biometric analysis.                                 |
+| **MLKit Face Detection**      | Detects and tracks up to 4 faces at once, overlays bounding boxes.                           |
+| **Liveness Challenges**       | Sequential anti-spoofing tests: Blink, Smile, Turn Head, Look Up/Down, etc.                  |
+| **Embedding Extraction**      | Generates face embeddings from MobileFaceNet (on device, offline).                           |
+| **Local Vector Store Search** | Finds nearest matches among registered faces using an in-memory vector database.              |
+| **RAG Matching**              | Contextual matching with consensus/margin filtering to reduce false positives.                |
+| **Identity Logging**          | Logs successful and failed attempts securely in encrypted storage (MMKV).                     |
 
 ---
 
 ## 🚀 Key Features
 
-* **Multi-Face Real-Time Detection & Identification**:
-  * Continuous scanner (Live Scan mode) that detects up to 4 faces simultaneously.
-  * Real-time projection of screen bounding boxes precisely over faces.
-  * Instant visual matching: Green frames (`#10b981`) with user IDs for registered employees and Red frames (`#ef4444`) for unregistered faces.
-* **Sequential Liveness Challenges**:
-  * Anti-spoofing mechanism to prevent picture/video projection attacks.
-  * Supported challenges: **Blink**, **Smile**, **Turn Head Left**, **Turn Head Right**, **Look Up**, and **Look Down**.
-  * Customizable English and Hindi voice-equivalent visual prompts.
-* **100% Offline Edge AI Engine**:
-  * Runs face embedding extraction using a quantized **MobileFaceNet** model (`mobilefacenet.tflite`).
-  * Utilizes Google MLKit via Vision Camera for ultra-fast facial attribute classification.
-* **Retrieval-Augmented Generation (RAG) Matching**:
-  * Context-aware matching utilizing local `VectorStore` (approximate nearest-neighbor).
-  * Temporal consensus smoothing (filtering facial flickering) and margin filtering (ensuring unique identity matches).
-  * High matching threshold (`0.93` fusion score) to eliminate false positives and identity mix-ups.
-* **Secure Offline Database**:
-  * Utilizes synchronous, encrypted `react-native-mmkv` for storage.
-  * Admin dashboard to audit attendance logs and manage/delete registered face templates.
-* **Lag-Free Performance**:
-  * Camera hardware turns off completely when displaying Success/Failure screens to preserve battery and drop CPU overhead to 0%.
+- **Multi-Face Real-Time Detection & Identification:**
+  - Live scan detects up to 4 faces simultaneously.
+  - Real-time overlays and instant user feedback (registered = green, unknown = red).
+- **Sequential Liveness Challenges:**
+  - Supports Blink, Smile, Head Turn (left/right), Look Up/Down.
+  - Visual/voice prompts (English & Hindi) to ensure user presence.
+- **100% Offline Edge AI:**
+  - Face embedding extraction via quantized MobileFaceNet (TFLite).
+  - Ultra-fast facial attribute classification with Google MLKit.
+- **Retrieval-Augmented Generation (RAG) Matching:**
+  - Uses a local vector store for context-aware lookups.
+  - Temporal consensus and high confidence threshold (0.93) for robust matching.
+- **Secure Database:**
+  - Encrypted, synchronous storage for templates and attendance logs.
+  - Admin panel for face template management and log auditing.
+- **Optimized Performance:**
+  - Camera hardware powers down when not needed to maximize device battery and minimize CPU usage.
 
 ---
 
 ## 🛠️ Tech Stack
 
-* **Framework**: React Native (Expo SDK 56)
-* **Camera & Processing**: React Native Vision Camera (v4) & Reanimated Worklets (JSI)
-* **Face Detection**: Google MLKit (via Vision Camera Face Detector)
-* **AI Inference**: React Native Fast TFLite (CPU Delegate)
-* **Storage**: React Native MMKV (Encrypted, Synchronous key-value database)
+- **Framework:** React Native (Expo SDK 56)
+- **Camera & Processing:** React Native Vision Camera (v4), Reanimated Worklets (JSI)
+- **Face Detection:** Google MLKit (Face Detector)
+- **AI Inference:** React Native Fast TFLite (MobileFaceNet)
+- **Storage:** React Native MMKV (Encrypted, synchronous DB)
 
 ---
 
 ## ⚙️ Prerequisites
 
-Before running the application, make sure you have:
-1. **Node.js** (v18 or newer recommended).
-2. **Java Development Kit (JDK) 17** (Compilation will fail with older or newer versions).
-3. **Android SDK & Platform Tools** configured in path (`adb` command must be working).
-4. A **Physical Android Device** connected via USB with **USB Debugging** enabled.
+Before running the application, you’ll need:
+
+1. **Node.js** (v18 or newer)
+2. **Java Development Kit (JDK) 17** (required for native build)
+3. **Android SDK & Platform Tools** (ensure `adb` runs in PATH)
+4. A **Physical Android Device** with **USB debugging** enabled
 
 ---
 
 ## 🏃‍♂️ Getting Started
 
 ### 1. Install Dependencies
-Navigate to the project folder and install Node packages:
 ```bash
 npm install
 ```
 
-### 2. Configure Environment Variables (Crucial for Windows)
-Ensure your `JAVA_HOME` environment variable points to **JDK 17** (e.g. Eclipse Adoptium OpenJDK 17).
-In PowerShell, you can set it for the active session:
+### 2. Configure JAVA_HOME (Windows)
 ```powershell
 $env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot"
 ```
 
-### 3. Build & Install on Connected Device
-With your Android phone plugged in, run the following command to compile the native Android bundle, install the APK, and launch the app:
+### 3. Build & Run on Device
 ```powershell
-# Set JAVA_HOME and compile debug build
 $env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot"; npm run android
 ```
 
-### 4. Run the Persistent ADB Tunnel (Optional)
-To ensure the Metro bundler server (`localhost:8081`) remains securely connected to your phone even if you unplug/replug the USB cable:
+### 4. Run Persistent ADB Tunnel (Optional)
 ```bash
 node adb-tunnel.js
 ```
@@ -102,3 +123,25 @@ BiometricReactNative/
 ├── package.json
 └── tsconfig.json
 ```
+
+---
+
+## 📝 Contributing
+
+Contributions welcome! Open issues, suggest features, or submit PRs for improvements.
+
+---
+
+## 📄 License
+
+[MIT License](LICENSE)
+
+---
+
+## 🙏 Acknowledgements
+
+- [face-api.js](https://github.com/justadudewhohacks/face-api.js)
+- [LangChain](https://github.com/langchain-ai/langchain-js) or [Haystack](https://github.com/deepset-ai/haystack) (if used)
+- All open-source contributors!
+
+---
