@@ -9,12 +9,12 @@ A high-performance, 100% offline, edge-AI biometric prototype built using **Reac
 ```mermaid
 flowchart TD
     A[Camera Capture] --> B[MLKit Face Detection]
-    B --> C[Liveness: Blink/Smile/Head Movement]
-    C -->|Passed| D[Embedding (MobileFaceNet TFLite)]
-    D --> E[Vector Store Search]
-    E --> F[RAG Matching (Consensus)]
+    B --> C[Liveness Challenges]
+    C -->|Passed| D[Embedding Extraction]
+    D --> E[Local Vector Store]
+    E --> F[RAG Matching]
     F --> G[Identity Log]
-    C -->|Failed| H[Spoof Detected]
+    C -->|Failed| H[Spoof Rejected]
 ```
 
 ---
