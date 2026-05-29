@@ -141,7 +141,7 @@ Contributions welcome! Open issues, suggest features, or submit PRs for improvem
 ## 🙏 Acknowledgements
 
 - [face-api.js](https://github.com/justadudewhohacks/face-api.js)
-- [LangChain](https://github.com/langchain-ai/langchain-js) or [Haystack](https://github.com/deepset-ai/haystack) (if used)
+- [LangChain](https://github.com/langchain-ai/langchain-js) 
 - All open-source contributors!
 
 ---
